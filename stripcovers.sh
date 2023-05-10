@@ -71,4 +71,6 @@ for artist in */ .*/ ; do
 
   cd ..
 
+  if [ ! "$(ls -A "$destArtistDir")" ]; then rmdir $destArtistDir; fi;
+
 done
