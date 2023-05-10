@@ -9,6 +9,28 @@ metaflac command line tool from the official flac packages
 ```sh
 sudo apt install flac
 ```
+
+### Usage
+```
+sh stripcovers.sh <music_collection_directory>
+```
+This will make a copy of ```<music_collection_directory>``` under the ```stripped_covers``` directory with all the flac files stripped from their covers. Coverart is saved on a single cover.jpg file for every album found.
+
+### Expected music collection directory structure
+```
+📂 artist_directory
+  📂 album_directory
+    📄 song.flac
+    📄 song.flac
+    📄 ....
+  📂 album_directory
+    📄 song.flac
+    📄 ...
+📂 artist_directory
+  📂 album_directory
+    📄 song.flac
+    📄 ....
+```
 ### Documentation
 https://xiph.org/flac/documentation_tools_metaflac.html
 
