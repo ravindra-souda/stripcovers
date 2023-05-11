@@ -14,11 +14,11 @@ destDir=$(pwd)
 
 cd "../$1" || exit
 
-for artist in */ .*/ ; do 
+for artist in */ .*/; do
 
-  if [ "$artist" = "./" ] || [ "$artist" = "../" ] || [ "$artist" = "*/" ] || [ ! -d "$artist" ]; then continue; fi; 
-  
-  echo "🎤 ARTIST: $artist";
+  if [ "$artist" = "./" ] || [ "$artist" = "../" ] || [ "$artist" = "*/" ] || [ ! -d "$artist" ]; then continue; fi
+
+  echo "🎤 ARTIST: $artist"
   cd "$artist" || continue
 
   destArtistDir="${destDir}/${artist}"
@@ -26,19 +26,19 @@ for artist in */ .*/ ; do
     mkdir "$destArtistDir"
   fi
 
-  for album in */ .*/ ; do 
+  for album in */ .*/; do
 
-    if [ "$album" = "./" ] || [ "$album" = "../" ] || [ "$album" = "*/" ]; then continue; fi;
+    if [ "$album" = "./" ] || [ "$album" = "../" ] || [ "$album" = "*/" ]; then continue; fi
 
-    echo "    💿 ALBUM: $album";
+    echo "    💿 ALBUM: $album"
     cd "$album" || continue
 
     count=$(find . -maxdepth 1 -type f -name '*.flac' 2>/dev/null | wc -l)
-    if [ "$count" = 0 ]; then 
+    if [ "$count" = 0 ]; then
       echo "        🥴 not an album, flac files are missing"
       cd ..
       continue
-    fi 
+    fi
 
     destAlbumDir="${destArtistDir}${album}"
     if [ -d "$destAlbumDir" ]; then
@@ -54,23 +54,23 @@ for artist in */ .*/ ; do
 
     echo "        💾 copying files"
     cp -- *.flac "$destAlbumDir"
-    
+
     cd "$destAlbumDir" || continue
 
-    for song in *; do 
+    for song in *; do
       echo "        🎨 extracting cover from $song"
       metaflac --export-picture-to=cover.jpg "$song" && break
     done
-    
+
     echo "        🧹 removing covers from tags"
     metaflac --remove --block-type=PICTURE,PADDING --dont-use-padding -- *.flac
-    metaflac --remove-tag=COVERART  --dont-use-padding -- *.flac
+    metaflac --remove-tag=COVERART --dont-use-padding -- *.flac
     cd "$originAlbumDir/.." || exit
 
   done
 
   cd ..
 
-  if [ ! "$(ls -A "$destArtistDir")" ]; then rmdir "$destArtistDir"; fi;
+  if [ ! "$(ls -A "$destArtistDir")" ]; then rmdir "$destArtistDir"; fi
 
 done
