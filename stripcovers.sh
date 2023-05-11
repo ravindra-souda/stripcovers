@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-if [ ! $# -eq 1 ] || [ ! -d $1 ]; then
+if [ ! $# -eq 1 ] || [ ! -d "$1" ]; then
   echo "😃 hello, give me a valid directory to work with"
   exit
 fi
@@ -33,8 +33,8 @@ for artist in */ .*/ ; do
     echo "    💿 ALBUM: $album";
     cd "$album" || continue
 
-    count=`ls -1 *.flac 2>/dev/null | wc -l`
-    if [ $count = 0 ]; then 
+    count=$(find . -maxdepth 1 -type f -name '*.flac' 2>/dev/null | wc -l)
+    if [ "$count" = 0 ]; then 
       echo "        🥴 not an album, flac files are missing"
       cd ..
       continue
@@ -53,9 +53,9 @@ for artist in */ .*/ ; do
     mkdir "$destAlbumDir"
 
     echo "        💾 copying files"
-    cp *.flac "$destAlbumDir"
+    cp -- *.flac "$destAlbumDir"
     
-    cd "$destAlbumDir"
+    cd "$destAlbumDir" || continue
 
     for song in *; do 
       echo "        🎨 extracting cover from $song"
@@ -63,14 +63,14 @@ for artist in */ .*/ ; do
     done
     
     echo "        🧹 removing covers from tags"
-    metaflac --remove --block-type=PICTURE,PADDING --dont-use-padding *.flac
-    metaflac --remove-tag=COVERART  --dont-use-padding *.flac
-    cd "$originAlbumDir/.."
+    metaflac --remove --block-type=PICTURE,PADDING --dont-use-padding -- *.flac
+    metaflac --remove-tag=COVERART  --dont-use-padding -- *.flac
+    cd "$originAlbumDir/.." || exit
 
   done
 
   cd ..
 
-  if [ ! "$(ls -A "$destArtistDir")" ]; then rmdir $destArtistDir; fi;
+  if [ ! "$(ls -A "$destArtistDir")" ]; then rmdir "$destArtistDir"; fi;
 
 done
